@@ -8,6 +8,7 @@ import (
 	"github.com/akhil/go-fiber-postgres/models"
 	"github.com/akhil/go-fiber-postgres/storage"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 )
 
@@ -30,6 +31,10 @@ func main() {
 
 	// เริ่มต้น Fiber app
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:3000", // หรือ domain frontend ของคุณ
+		AllowCredentials: true,
+	}))
 
 	// ลงทะเบียน Routes
 	booksController := controllers.NewBooksController(db) //ส่ง db object เข้าไปใน books_controller.go
