@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"net/http"
+	"os"
 
+	"github.com/akhil/go-fiber-postgres/middleware"
 	"github.com/akhil/go-fiber-postgres/models"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -20,14 +22,16 @@ func NewBooksController(db *gorm.DB) *BooksController {
 
 // RegisterRoutes registers all book routes under /api/books
 func (bc *BooksController) RegisterRoutes(app *fiber.App) {
+	secret := os.Getenv("Jwt_Secret")
 	group := app.Group("/api/books")
 	group.Post("/", bc.CreateBook)
 	group.Delete("/:id", bc.DeleteBook)
 	group.Get("/:id", bc.GetBookByID)
-	group.Get("/", bc.GetBooks)
+	group.Get("/", middleware.RoleAuthMiddleware(secret, "admin"), bc.GetBooks)
 	group.Patch("/:id", bc.UpdateBook)
 }
 
+// , middleware.RoleCookieMiddleware(os.Getenv("Jwt_Secret"), "jwt", "admin")
 // CreateBook creates a new book record
 func (bc *BooksController) CreateBook(c *fiber.Ctx) error {
 	book := models.Books{}

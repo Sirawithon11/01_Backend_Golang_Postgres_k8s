@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// รัน migration
-	if err := models.MigrateBooks(db); err != nil {
+	if err := models.Migrate(db); err != nil {
 		log.Fatal("could not migrate database:", err)
 	}
 
@@ -34,6 +34,9 @@ func main() {
 	// ลงทะเบียน Routes
 	booksController := controllers.NewBooksController(db) //ส่ง db object เข้าไปใน books_controller.go
 	booksController.RegisterRoutes(app)                   // ส่ง server object(app จาก fiber new) เข้าไปสำหรับ ทำการ route
+
+	Auth := controllers.DbForAuth(db)
+	Auth.RegisterRoutes(app)
 
 	// เริ่มเซิร์ฟเวอร์
 	log.Fatal(app.Listen(":" + os.Getenv("Port")))
