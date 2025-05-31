@@ -33,7 +33,8 @@ func main() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:3000", // หรือ domain frontend ของคุณ
-		AllowCredentials: true,
+		AllowCredentials: true,                    //อนุญาติให้ web ส่ง jwt มากับ cookie
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 	}))
 
 	// ลงทะเบียน Routes
