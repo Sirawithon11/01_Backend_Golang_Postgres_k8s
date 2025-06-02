@@ -142,10 +142,11 @@ func (db *Auth) login(c *fiber.Ctx) error {
 
 	// สร้าง cookie
 	cookie := new(fiber.Cookie)
+	cookie.Domain = "localhost"
 	cookie.Name = "jwt"        // ชื่อ cookie
 	cookie.Value = signedToken // ใส่ token ลงไป
 	cookie.Expires = expTime   // กำหนดเวลาหมดอายุให้ตรงกับ exp claim
-	cookie.HTTPOnly = true     // ป้องกัน JavaScript ฝั่ง client อ่านได้
+	cookie.HTTPOnly = false    // ป้องกัน JavaScript ฝั่ง client อ่านได้
 	cookie.Secure = false      // สั่งให้ส่งเฉพาะบน HTTPS (production)
 	cookie.SameSite = "Lax"    // หรือตั้งเป็น "Strict" / "None" ตามความเหมาะสม
 
