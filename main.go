@@ -14,9 +14,7 @@ import (
 
 func main() {
 	// นำ .env จากภายนอก พร้อมทำ exception
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal(err)
-	}
+	godotenv.Load(".env")
 
 	// เชื่อมต่อฐานข้อมูล
 	db, err := storage.NewConnection() //db คือ object สำหรับอ้างอิงถือ postgres DB ที่ยอมรับการเชื่อมต่อแล้ว

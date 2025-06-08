@@ -2,7 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -20,10 +19,7 @@ type Config struct {
 }
 
 func NewConnection() (*gorm.DB, error) {
-	err := godotenv.Load(".env") // รับตัวแปร env
-	if err != nil {
-		log.Fatal(err)
-	}
+	godotenv.Load(".env") // รับตัวแปร env
 
 	config := &Config{ //กำหนดตัวแปร env ใส่ struct
 		Host:     os.Getenv("DB_HOST"),
