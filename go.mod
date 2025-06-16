@@ -13,6 +13,7 @@ require (
 )
 
 require (
+	github.com/go-resty/resty/v2 v2.16.5 // indirect
 	github.com/gofiber/jwt/v3 v3.3.10 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgx/v5 v5.7.5 // indirect

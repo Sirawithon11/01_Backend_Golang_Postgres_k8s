@@ -1,12 +1,15 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/akhil/go-fiber-postgres/models"
+	"github.com/go-resty/resty/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -108,6 +111,7 @@ func (db *Auth) registerUser(c *fiber.Ctx) error {
 // แต่ การ return nil ในพารามิเตอร์ชนิด error หมายถึง “ไม่มีข้อผิดพลาดใดๆ เกิดขึ้น” หรือ “สำเร็จ (success)”
 
 func (db *Auth) login(c *fiber.Ctx) error {
+
 	checkUser := &LoginInput{}
 
 	if err := c.BodyParser(checkUser); err != nil {
@@ -139,6 +143,30 @@ func (db *Auth) login(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "cannot generate token"})
 	}
+
+	client := resty.New()
+	url := "http://127.0.0.1:7280/api/v1/auth_login/ingest"
+	docs := []map[string]interface{}{
+		{"message": "1", "token": "helloworld", "exp": "2025-06-12T08:00:00Z"},
+	}
+	var ndjson string
+	for _, doc := range docs {
+		b, err := json.Marshal(doc)
+		if err != nil {
+			log.Fatalf("marshal failed: %v", err)
+		}
+		ndjson += string(b) + "\n"
+	}
+
+	resp, err := client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(ndjson).
+		Post(url)
+	if err != nil {
+		log.Fatalf("post failed: %v", err)
+	}
+
+	log.Println("Status:", resp.Status())
 
 	// สร้าง cookie
 	cookie := new(fiber.Cookie)
