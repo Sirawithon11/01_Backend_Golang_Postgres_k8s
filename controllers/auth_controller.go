@@ -55,8 +55,8 @@ func DbForAuth(db *gorm.DB) *Auth {
 
 func (db *Auth) RegisterRoutes(app *fiber.App) {
 	group := app.Group("/api/auth")
-	group.Post("/register", db.registerUser)
-	group.Post("/login", db.login)
+	group.Post("/register", db.RegisterUser)
+	group.Post("/login", db.Login)
 	group.Get("/me", db.GetUserInfo)
 }
 
@@ -68,7 +68,7 @@ func HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (db *Auth) registerUser(c *fiber.Ctx) error {
+func (db *Auth) RegisterUser(c *fiber.Ctx) error {
 	user := &models.Users{}
 
 	//นำข้อมูลออกมา จาก req.body
@@ -97,8 +97,8 @@ func (db *Auth) registerUser(c *fiber.Ctx) error {
 	*user.Password = hashed
 
 	if err := db.DB.Create(user).Error; err != nil {
-		c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "could not register"})
-		return err
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"message": "could not register"})
+
 	}
 	return c.Status(http.StatusOK).JSON(fiber.Map{
 		"message": "register successfully",
@@ -110,7 +110,7 @@ func (db *Auth) registerUser(c *fiber.Ctx) error {
 // nil ถ้าใช้กับตัวแปร หรือ pointer หมายถึง ไม่มีค่า หรือ ไม่ได้ชี้ไปไหน
 // แต่ การ return nil ในพารามิเตอร์ชนิด error หมายถึง “ไม่มีข้อผิดพลาดใดๆ เกิดขึ้น” หรือ “สำเร็จ (success)”
 
-func (db *Auth) login(c *fiber.Ctx) error {
+func (db *Auth) Login(c *fiber.Ctx) error {
 
 	checkUser := &LoginInput{}
 
