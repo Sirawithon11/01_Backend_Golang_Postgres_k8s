@@ -97,8 +97,10 @@ func TestRegisterUser_Success(t *testing.T) {
 	})
 
 	t.Run("register user with missing value", func(t *testing.T) {
+		gormDB, _ := setupMockDB(t)
+		auth := controllers.Auth{DB: gormDB}
 		app := fiber.New()
-		app.Post("/register", controllers.Auth{}.RegisterUser)
+		app.Post("/register", auth.RegisterUser)
 		tests := []struct {
 			description  string
 			requestBody  models.Users
@@ -107,7 +109,7 @@ func TestRegisterUser_Success(t *testing.T) {
 			{
 				description: "empty email",
 				requestBody: models.Users{
-					Email:    ptr(""), // <-- ใช้ helper สร้าง *string
+					Email:    ptr(""),
 					Password: ptr("password123"),
 					Role:     ptr("user"),
 				},
@@ -137,7 +139,7 @@ func TestRegisterUser_Success(t *testing.T) {
 		for _, test := range tests {
 			t.Run(test.description, func(t *testing.T) {
 				reqBody, _ := json.Marshal(test.requestBody)
-				req := httptest.NewRequest("POST", "/users", bytes.NewReader(reqBody))
+				req := httptest.NewRequest("POST", "/register", bytes.NewReader(reqBody))
 				req.Header.Set("Content-Type", "application/json")
 				resp, _ := app.Test(req)
 
